@@ -20,7 +20,7 @@ use warnings;
 
 use Foswiki::Func ();
 
-our $VERSION = '1.00';
+our $VERSION = '1.01';
 our $RELEASE = '19 Nov 2019';
 our $SHORTDESCRIPTION = 'Pixabay stock images and videos';
 our $NO_PREFS_IN_TOPIC = 1;
