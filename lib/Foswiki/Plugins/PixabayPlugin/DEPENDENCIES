@@ -1,0 +1,3 @@
+WebService::Pixabay,>=2,cpan,Required
+Cache::FileCache,>=1,cpan,Required
+LWP::UserAgent,>=6,cpan,Required

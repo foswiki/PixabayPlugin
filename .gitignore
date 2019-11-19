@@ -1,0 +1,9 @@
+*.swp
+*,v
+/PixabayPlugin.md5
+/PixabayPlugin.sha1
+/PixabayPlugin.tgz
+/PixabayPlugin.txt
+/PixabayPlugin.zip
+/PixabayPlugin_installer
+/PixabayPlugin_installer.pl

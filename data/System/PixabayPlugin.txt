@@ -1,0 +1,101 @@
+%META:TOPICINFO{author="micha" comment="reprev" date="1564573002" format="1.1" reprev="2" version="3"}%
+---+!! %TOPIC%
+%FORMFIELD{"Description"}%
+
+%TOC%
+
+%IMAGE{"logo.png" title="pixabay.com" align="right" href="https://pixabay.com" width="200"}%
+---++ Description
+
+This plugin let's you access over 1 mililion stock images, videos and illuatrations of [[https://pixabay.com/][pixabay]].
+Pixabay is a vibrant community of creatives, sharing copyright free images and videos. All contents are released under the [[https://pixabay.com/service/license/][Pixabay License]], which makes them safe to use without asking for permission or giving credit to the artist - even for commercial purposes.
+
+If you se this plugin and this the Pixabay API, a link to Pixabay is required and you may use [[https://pixabay.com/service/about/#goodies][their logo]] for this purpose.
+By default, you can make up to 5,000 requests per hour towards pixabay.com. Requests are associated with an API key, and not with your IP address.
+In addition this plugin caches query results to pixabay.com for a certain period of time, a day by default. 
+
+Returned images are cached on this server and _not_ hotlinked their source location on pixabay.com. This is not only required due to the API usage guidelines
+but also comes with a certain performance advantage compared to other image services such as unsplash.com.
+
+---++ Usage
+
+Images and videos are made available to Foswiki using the =%<nop>PIXABAY{...}%= macro. The macro may return a list of images or videos, not only one.
+You may page through this list using the =skip= and =limit= parameters. 
+
+| *Parameter* | *Description* | *Default* |
+| ="..."= or =q= | search term. if omitted, all images are returned. This value may not exceed 100 characters.  example: "yellow flower" | |
+| =id= | retrieve individual images by iD. the id normally is a numeric value which may also be specified as a search term. | |
+| =lang= | language code of the language to be searched in. accepted values: cs, da, de, en, es, fr, id, it, hu, nl, no, pl, pt, ro, sk, fi, sv, tr, vi, th, bg, ru, el, ja, ko, zh  | en |
+| =type= | kind of resource to query. possible values: photo, illuatrations, vector, video, film, animation, allimages, allvideos | photo |
+| =category= | filter results by category. accepted values: fashion, nature, backgrounds, science, education, people, feelings, religion, health, places, animals, industry, food, computer, sports, transportation, travel, buildings, business, music | |
+| =safesearch= | a flag indicating that only images/videos suitable for all ages should be returned. | off |
+| =min_width= | minimum image width | 0 |
+| =min_height= | minimum image height | 0 |
+| =size= | accepted values for images: web, preview, large, orig, fullHD; accepted values for videos: tiny, small, medium, large | |
+| =editors_choice= | select images that have received an [[https://pixabay.com/editors_choice/][Editor's Choice]] award | off |
+| =order= | how the results should be ordered. accepted values: popular, latest | popular |
+| =header= | string to be prefixed to results | |
+| =format= | format string to render the fetched resource. | for images: =&lt;img src='$url' width='$width' height='$height' alt='$id' $class />= %BR% \
+                                                           for videos: =&lt;video width='$width' height='$height' $controls $autoplay $muted $loop $class alt='$id'><source src='$url' />Your browser does not support the video tag.&lt;/video>= |
+| =separator= | format string between each fetched resource | |
+| =footer= | string to be appended to results | |
+| =width= | explicit width of the image/video | width of the resource as returned by pixabay |
+| =height= | explicit height of the image/video | height of the resource as returned by pixabay |
+| =class= | css class to add to the result | |
+| =random= | integer specifying a range within which a skip value is piced randomly; the higher the parameter the more random results will be returned | 0 |
+| =skip= | page through the list of images/videos found by the search term | 0 |
+| =limit= | number if images/videos to return | 1 |
+| =orientation= | (only images)  whether an image is wider than it is tall, or taller than it is wide. accepted values: all, horizontal, vertical | all |
+| =controls= | (only videos) flag to display video controls (pause, play, forward, backward) | off |
+| =autoplay= | (only videos) flag to start playing the video as soon as it has been loaded | on |
+| =mute= | (only videos) flag to mute or unmute audio of a video | on |
+| =loop= | (only videos) flag to loop a video or only play it once | on |
+
+---++ Examples
+
+---+++ Default settings
+<verbatim class="tml">
+%PIXABAY{"neon"}%
+</verbatim>
+
+---+++ Specific image
+<verbatim class="tml">
+%PIXABAY{id="2014616"%
+</verbatim>
+
+---+++ Random film with people
+<verbatim class="tml">
+%PIXABAY{"people" type="film" random="10"}%
+</verbatim>
+
+---++ Photos by Masashi Wakui
+<verbatim class="tml">
+%PIXABAY{"user:MasashiWakui" random="10" limit="5"}%
+</verbatim>
+
+---++ Installation Instructions
+
+%$INSTALL_INSTRUCTIONS%
+
+Before you may use this plugin you'll need to register an account at https://pixabay.com and fetch your API key from here https://pixabay.com/api/docs.
+
+
+---++ Dependencies
+%$DEPENDENCIES%
+
+---++ Change History
+
+%TABLE{columnwidths="7em" tablewidth="100%"}%
+|  19 Nov 2019 | initial release |
+
+%META:FORM{name="PackageForm"}%
+%META:FIELD{name="Author" title="Author" value="Michael Daum"}%
+%META:FIELD{name="Version" title="Version" value="%25$VERSION%25"}%
+%META:FIELD{name="Release" title="Release" value="%25$RELEASE%25"}%
+%META:FIELD{name="Description" title="Description" value="%25$SHORTDESCRIPTION%25"}%
+%META:FIELD{name="Repository" title="Repository" value="https://github.com/foswiki/%25$ROOTMODULE%25"}%
+%META:FIELD{name="Copyright" title="Copyright" value="2019, Michael Daum, All Rights Reserved"}%
+%META:FIELD{name="License" title="License" value="GPL ([[http://www.gnu.org/copyleft/gpl.html][GNU General Public License]])"}%
+%META:FIELD{name="Home" title="Home" value="http://foswiki.org/Extensions/%25$ROOTMODULE%25"}%
+%META:FIELD{name="Support" title="Support" value="http://foswiki.org/Support/%25$ROOTMODULE%25"}%
+%META:FILEATTACHMENT{name="logo.png" attachment="logo.png" attr="" comment="" date="1564568170" size="7199" user="micha" version="1"}%
