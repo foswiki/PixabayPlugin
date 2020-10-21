@@ -1,6 +1,6 @@
 # Plugin for Foswiki - The Free and Open Source Wiki, https://foswiki.org/
 #
-# PixabayPlugin is Copyright (C) 2019 Michael Daum http://michaeldaumconsulting.com
+# PixabayPlugin is Copyright (C) 2019-2020 Michael Daum http://michaeldaumconsulting.com
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -20,9 +20,10 @@ use warnings;
 
 use Foswiki::Func ();
 use Foswiki::Plugins::PixabayPlugin::WebService ();
-use Foswiki::Plugins::PixabayPlugin::UserAgent ();
+use Foswiki::Contrib::CacheContrib();
 
 use constant TRACE => 0; # toggle me
+
 #use Data::Dump qw(dump); # disable for production
 #use Log::Tiny ();
 
@@ -45,7 +46,6 @@ sub DESTROY {
   my $this = shift;
 
   undef $this->{_webService};
-  undef $this->{_userAgent};
 }
 
 sub PIXABAY {
@@ -163,6 +163,8 @@ sub handleImage {
 
   my $response = $this->imageSearch(%opts);
 
+  #_writeDebug("response=".dump($response));
+
   while ($response && $response->{hits}) {
 
     my $total = $response->{totalHits};
@@ -210,7 +212,7 @@ sub handleImage {
     $response = $this->imageSearch(%opts);
   }
   unless (@results) {
-    _writeDebug("WARNING: no results");
+    _writeWarning("no results");
     return "";
   }
 
@@ -278,7 +280,7 @@ sub handleVideo {
 
   my $response = $this->videoSearch(%opts);
 
-  #_writeDebug(dump($response));
+  #_writeDebug("response=".dump($response));
 
   while ($response && $response->{hits}) {
 
@@ -372,6 +374,8 @@ sub translateUrl {
 sub mirrorImage {
   my ($this, $hit, $key) = @_;
 
+  _writeDebug("mirrorImage");
+
   my $url = $hit->{$key};
   return '' unless defined $url;
   _writeDebug("$key=$url");
@@ -406,15 +410,14 @@ sub mirror {
 
   unless (-e $filePath){
 
-    my $res = $this->userAgent->mirror($url, $filePath);
+    my $ua = Foswiki::Contrib::CacheContrib::getUserAgent();
+    my $res = $ua->mirror($url, $filePath);
     return unless $res;
 
     unless ($res->is_success || $res->code() == 304) {
-      if (TRACE) {
-	_writeDebug("failed to fetch $url, code=".$res->code());
-	_writeDebug("http status=".$res->status_line);
-	_writeDebug("content=".$res->decoded_content);
-      }
+      _writeWarning("failed to fetch $url, code=".$res->code());
+      _writeWarning("http status=".$res->status_line);
+      _writeWarning("content=".$res->decoded_content);
       return;
     }
   }
@@ -428,7 +431,7 @@ sub webService {
   unless ($this->{_webService}) {
     _writeDebug("creating webservice");
     $this->{_webService} = Foswiki::Plugins::PixabayPlugin::WebService->new(
-      #logger => Log::Tiny->new('/tmp/pixabay.log'), 
+      #logger => Log::Tiny->new(Foswiki::Func::getWorkArea("PixabayPlugin").'/pixabay.log'), 
       api_key => $this->{apiKey},
       @_
     );
@@ -444,7 +447,7 @@ sub imageSearch {
   eval {
     $response = $this->webService->image_search(@_);
   };
-  #warn $@ if $@;
+  warn $@ if $@;
 
   return $response;
 }
@@ -456,39 +459,14 @@ sub videoSearch {
   eval {
     $response = $this->webService->video_search(@_);
   };
-  #warn $@ if $@;
+  warn $@ if $@;
 
   return $response;
 }
 
-
-sub userAgent {
-  my $this = shift;
-
-  #_writeDebug("called userAgent");
-  unless ($this->{_userAgent}) {
-    _writeDebug("creating userAgent");
-    $this->{_userAgent} = Foswiki::Plugins::PixabayPlugin::UserAgent->new(@_);
-    $this->{_userAgent}->agent('Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/74.0.3729.169 Chrome/74.0.3729.169 Safari/537.36'); # TODO: make it configurable
-  }
-
-  return $this->{_userAgent};
-}
-
-sub purgeCache {
-  my $this = shift;
-
-  $this->userAgent->cache->purge;
-
-  return;
-}
-
-sub clearCache {
-  my $this = shift;
-
-  $this->userAgent->cache->clear;
-
-  return;
+sub _writeWarning {
+  #Foswiki::Func::writeWarning("PixabayPlugin::Core - $_[0]");
+  print STDERR "PixabayPlugin::Core - WARNING: $_[0]\n";
 }
 
 sub _writeDebug {

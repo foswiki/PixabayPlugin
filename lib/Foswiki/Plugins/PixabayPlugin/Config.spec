@@ -14,8 +14,4 @@ $Foswiki::cfg{PixabayPlugin}{CacheDir} = '$Foswiki::cfg{PubDir}/$Foswiki::cfg{Sy
 # The url matching the CacheDir where requested images and videos are fetched from.
 $Foswiki::cfg{PixabayPlugin}{CacheUrl} = '$Foswiki::cfg{PubUrlPath}/$Foswiki::cfg{SystemWebName}/PixabayPlugin/cache';
 
-# **STRING**
-# Expiry time of requests to the pixabay.com API.
-$Foswiki::cfg{PixabayPlugin}{CacheExpire} = '1 d';
-
 1;

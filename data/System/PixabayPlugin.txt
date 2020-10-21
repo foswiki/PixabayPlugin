@@ -1,10 +1,11 @@
-%META:TOPICINFO{author="micha" comment="reprev" date="1564573002" format="1.1" reprev="2" version="3"}%
+%META:TOPICINFO{author="ProjectContributor" comment="reprev" date="1564573002" format="1.1" version="1"}%
 ---+!! %TOPIC%
 %FORMFIELD{"Description"}%
 
 %TOC%
 
 %IMAGE{"logo.png" title="pixabay.com" align="right" href="https://pixabay.com" width="200"}%
+
 ---++ Description
 
 This plugin let's you access over 1 mililion stock images, videos and illuatrations of [[https://pixabay.com/][pixabay]].
@@ -86,6 +87,7 @@ Before you may use this plugin you'll need to register an account at https://pix
 ---++ Change History
 
 %TABLE{columnwidths="7em" tablewidth="100%"}%
+|  21 Oct 2020 | reworked caching to use !CacheContrib |
 |  19 Nov 2019 | initial release |
 
 %META:FORM{name="PackageForm"}%
@@ -94,8 +96,8 @@ Before you may use this plugin you'll need to register an account at https://pix
 %META:FIELD{name="Release" title="Release" value="%25$RELEASE%25"}%
 %META:FIELD{name="Description" title="Description" value="%25$SHORTDESCRIPTION%25"}%
 %META:FIELD{name="Repository" title="Repository" value="https://github.com/foswiki/%25$ROOTMODULE%25"}%
-%META:FIELD{name="Copyright" title="Copyright" value="2019, Michael Daum, All Rights Reserved"}%
+%META:FIELD{name="Copyright" title="Copyright" value="2019-2020, Michael Daum, All Rights Reserved"}%
 %META:FIELD{name="License" title="License" value="GPL ([[http://www.gnu.org/copyleft/gpl.html][GNU General Public License]])"}%
 %META:FIELD{name="Home" title="Home" value="http://foswiki.org/Extensions/%25$ROOTMODULE%25"}%
 %META:FIELD{name="Support" title="Support" value="http://foswiki.org/Support/%25$ROOTMODULE%25"}%
-%META:FILEATTACHMENT{name="logo.png" attachment="logo.png" attr="" comment="" date="1564568170" size="7199" user="micha" version="1"}%
+%META:FILEATTACHMENT{name="logo.png" attachment="logo.png" attr="" comment="" date="1564568170" size="7199" user="ProjectContributor" version="1"}%

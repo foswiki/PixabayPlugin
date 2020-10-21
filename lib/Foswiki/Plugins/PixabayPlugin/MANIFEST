@@ -4,7 +4,6 @@ lib/Foswiki/Plugins/PixabayPlugin/Config.spec 0644
 lib/Foswiki/Plugins/PixabayPlugin/Core.pm 0644
 lib/Foswiki/Plugins/PixabayPlugin/DEPENDENCIES 0644
 lib/Foswiki/Plugins/PixabayPlugin.pm 0644
-lib/Foswiki/Plugins/PixabayPlugin/UserAgent.pm 0644
 lib/Foswiki/Plugins/PixabayPlugin/WebService.pm 0644
 pub/System/PixabayPlugin/cache/README 0644
 pub/System/PixabayPlugin/logo.png 0644

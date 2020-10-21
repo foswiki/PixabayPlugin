@@ -1,6 +1,6 @@
 # Plugin for Foswiki - The Free and Open Source Wiki, https://foswiki.org/
 #
-# PixabayPlugin is Copyright (C) 2019 Michael Daum http://michaeldaumconsulting.com
+# PixabayPlugin is Copyright (C) 2019-2020 Michael Daum http://michaeldaumconsulting.com
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -20,8 +20,8 @@ use warnings;
 
 use Foswiki::Func ();
 
-our $VERSION = '1.01';
-our $RELEASE = '19 Nov 2019';
+our $VERSION = '2.00';
+our $RELEASE = '21 Oct 2020';
 our $SHORTDESCRIPTION = 'Pixabay stock images and videos';
 our $NO_PREFS_IN_TOPIC = 1;
 our $core;
@@ -29,19 +29,6 @@ our $core;
 sub initPlugin {
 
   Foswiki::Func::registerTagHandler('PIXABAY', sub { return getCore()->PIXABAY(@_); });
-
-  Foswiki::Func::registerRESTHandler('purgeCache', sub { return getCore()->purgeCache(@_); },
-    authenticate => 1,
-    validate => 1,
-    http_allow => 'GET,POST',
-  );
-
-  Foswiki::Func::registerRESTHandler('clearCache', sub { return getCore()->clearCache(@_); },
-    authenticate => 1,
-    validate => 1,
-    http_allow => 'GET,POST',
-  );
-
 
   return 1;
 }
