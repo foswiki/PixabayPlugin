@@ -1,6 +1,6 @@
 # Plugin for Foswiki - The Free and Open Source Wiki, http://foswiki.org/
 #
-# PixabayPlugin is Copyright (C) 2019-2020 Michael Daum http://michaeldaumconsulting.com
+# PixabayPlugin is Copyright (C) 2019-2025 Michael Daum http://michaeldaumconsulting.com
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -25,7 +25,7 @@ our @ISA = qw( WebService::Pixabay );
 sub ua {
   my $this = shift;
 
-  return Foswiki::Contrib::CacheContrib::getUserAgent();
+  return Foswiki::Contrib::CacheContrib::getUserAgent("PixabayPlugin");
 }
 
 1;

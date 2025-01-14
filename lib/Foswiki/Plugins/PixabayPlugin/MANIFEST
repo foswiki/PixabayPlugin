@@ -3,6 +3,7 @@ data/System/PixabayPlugin.txt 0644
 lib/Foswiki/Plugins/PixabayPlugin/Config.spec 0644
 lib/Foswiki/Plugins/PixabayPlugin/Core.pm 0644
 lib/Foswiki/Plugins/PixabayPlugin/DEPENDENCIES 0644
+lib/Foswiki/Plugins/PixabayPlugin/MANIFEST 0644
 lib/Foswiki/Plugins/PixabayPlugin.pm 0644
 lib/Foswiki/Plugins/PixabayPlugin/WebService.pm 0644
 pub/System/PixabayPlugin/cache/README 0644

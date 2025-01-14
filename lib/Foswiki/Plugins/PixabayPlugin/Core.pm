@@ -1,6 +1,6 @@
 # Plugin for Foswiki - The Free and Open Source Wiki, https://foswiki.org/
 #
-# PixabayPlugin is Copyright (C) 2019-2020 Michael Daum http://michaeldaumconsulting.com
+# PixabayPlugin is Copyright (C) 2019-2025 Michael Daum http://michaeldaumconsulting.com
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -21,11 +21,10 @@ use warnings;
 use Foswiki::Func ();
 use Foswiki::Plugins::PixabayPlugin::WebService ();
 use Foswiki::Contrib::CacheContrib();
+use Error qw(:try);
 
 use constant TRACE => 0; # toggle me
-
 #use Data::Dump qw(dump); # disable for production
-#use Log::Tiny ();
 
 sub new {
   my $class = shift;
@@ -34,18 +33,71 @@ sub new {
     cacheDir => $Foswiki::cfg{PixabayPlugin}{CacheDir} || $Foswiki::cfg{PubDir} . '/' . $Foswiki::cfg{SystemWebName} . '/PixabayPlugin/cache',
     cacheUrl => $Foswiki::cfg{PixabayPlugin}{CacheUrl} || $Foswiki::cfg{PubUrlPath} . '/' . $Foswiki::cfg{SystemWebName} . '/PixabayPlugin/cache',
     apiKey => $Foswiki::cfg{PixabayPlugin}{APIKey},
+    cacheExpire => $Foswiki::cfg{PixabayPlugin}{CacheExpire} || '1 M',
     @_
   }, $class);
 
   mkdir $this->{cacheDir} unless -d $this->{cacheDir};
 
+  my (%mult) = (
+    's' => 1,
+    'm' => 60,
+    'h' => 60 * 60,
+    'd' => 60 * 60 * 24,
+    'M' => 60 * 60 * 24 * 30,
+    'y' => 60 * 60 * 24 * 365
+  );
+
+  if ($this->{cacheExpire} =~ /^([+-]?(?:\d+|\d*\.\d*))\s*([smhdMy])/) {
+    $this->{_cacheTime} = (($mult{$2} || 1) * $1);
+  } else {
+    print STDERR "ERROR: invalid cache time $this->{cacheExpire} in PixabayPlugin\n";
+    $this->{_cacheTime} = 0; # ERROR
+  }
+
   return $this;
 }
 
-sub DESTROY {
+sub finish {
   my $this = shift;
 
   undef $this->{_webService};
+}
+
+sub purgeCache {
+  my $this = shift;
+
+  _writeDebug("reading cacheDir $this->{cacheDir}");
+
+  my $num = 0;
+  opendir(my $dh, $this->{cacheDir}) || die "Can't open cacheDir: $!";
+  while (my $file = readdir $dh) {
+    next if $file eq 'README' || $file eq '.' || $file eq '..';
+
+    my $filePath = "$this->{cacheDir}/$file";
+
+    if ($this->isExpired($filePath)) {
+      unlink $filePath;
+      _writeDebug("deleting $file");
+      $num++;
+    }
+  }
+  closedir $dh;
+  _writeDebug("deleted $num file(s)");
+
+  return "\n\n"
+}
+
+sub isExpired {
+  my ($this, $filePath) = @_;
+
+  return 0 unless $this->{_cacheTime};
+
+  my @stat = stat($filePath);
+  my $mtime = $stat[9];
+
+  return 1 if ($mtime + $this->{_cacheTime}) < time();
+  return 0;
 }
 
 sub PIXABAY {
@@ -351,8 +403,10 @@ sub getFileNameOfUrl {
   return "" unless $url;
 
   my $fileName = $url;
+  $fileName = _urlDecode($fileName);
   $fileName =~ s/^.*\/([^\/]+)$/$1/;
   $fileName =~ s/\?.*$//;
+  $fileName =~ s/\s+//g;
 
   return $fileName;
 }
@@ -408,10 +462,17 @@ sub mirror {
   my $filePath = $this->getFilePathOfUrl($url);
   _writeDebug("filePath=$filePath");
 
-  unless (-e $filePath){
+  unless (-e $filePath) {
 
-    my $ua = Foswiki::Contrib::CacheContrib::getUserAgent();
-    my $res = $ua->mirror($url, $filePath);
+    my $ua = Foswiki::Contrib::CacheContrib::getUserAgent("PixabayPlugin");
+    my $res;
+    try {
+      $res = $ua->mirror($url, $filePath);
+    } catch Error with {
+      my $error = shift;
+      $error =~ s/ at .*$//ms;
+      print STDERR "mirror of $url failed: $error\n";
+    };
     return unless $res;
 
     unless ($res->is_success || $res->code() == 304) {
@@ -431,7 +492,6 @@ sub webService {
   unless ($this->{_webService}) {
     _writeDebug("creating webservice");
     $this->{_webService} = Foswiki::Plugins::PixabayPlugin::WebService->new(
-      #logger => Log::Tiny->new(Foswiki::Func::getWorkArea("PixabayPlugin").'/pixabay.log'), 
       api_key => $this->{apiKey},
       @_
     );
@@ -442,6 +502,8 @@ sub webService {
 
 sub imageSearch {
   my $this = shift;
+
+  _writeDebug("called imageSearch()");
 
   my $response;
   eval {
@@ -454,6 +516,8 @@ sub imageSearch {
 
 sub videoSearch {
   my $this = shift;
+
+  _writeDebug("called videoSearch()");
 
   my $response;
   eval {
@@ -480,6 +544,14 @@ sub _inlineError {
 
   $msg =~ s/ at .*$//g;
   return "<span class='foswikiAlert'>".$msg.'</span>';
+}
+
+sub _urlDecode {
+  my $text = shift;
+
+  $text =~ s/%([\da-fA-F]{2})/chr(hex($1))/ge;
+
+  return $text;
 }
 
 1;
